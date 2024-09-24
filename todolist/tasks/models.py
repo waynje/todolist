@@ -1,7 +1,33 @@
+from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 
 User = get_user_model()
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='usercomments',
+        verbose_name='Пользователь'
+    )
+    creation_date = models.DateField(
+        'Дата создания',
+        default=timezone.now
+    )
+    text = models.TextField(
+        'Текст'
+    )
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.name
 
 
 class Category(models.Model):
@@ -33,6 +59,10 @@ class Task(models.Model):
         related_name='categorytasks',
         verbose_name='Категория',
     )
+    creation_date = models.DateField(
+        'Дата создания',
+        default=timezone.now
+    )
     execution_date = models.DateField(
         'Дата исполнения'
     )
@@ -45,6 +75,13 @@ class Task(models.Model):
     complete = models.BooleanField(
         'Выполнено',
         default=False,
+    )
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name='commentstask',
+        verbose_name='Комментарий',
+        null=True
     )
 
     class Meta:
